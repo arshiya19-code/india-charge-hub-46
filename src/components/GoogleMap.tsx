@@ -8,12 +8,12 @@ interface GoogleMapProps {
   className?: string;
 }
 
-const GoogleMap = ({ className = '' }: GoogleMapProps) => {
+const GoogleMap = ({ stations, userLocation, onMarkerClick, className = '' }: GoogleMapProps) => {
   return (
     <div className={`relative w-full h-[350px] rounded-lg overflow-hidden ${className}`}>
       <img 
-        src="/lovable-uploads/f4ad4bd7-200d-4ffc-9fe2-1854e40db682.png"
-        alt="EV Charging Stations Map"
+        src="/lovable-uploads/3fb41468-ec12-48a1-9d14-4d3a6862a26c.png"
+        alt="EV Charging Stations Map (Hyderabad)"
         className="w-full h-full object-cover"
       />
       {/* Zoom controls */}
