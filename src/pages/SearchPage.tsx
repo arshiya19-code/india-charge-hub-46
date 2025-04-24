@@ -4,18 +4,17 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Search as SearchIcon } from 'lucide-react';
-import { Station } from '@/types';
+import { Station, LocationCoords } from '@/types';
 import StationCard from '@/components/StationCard';
-import { fetchNearbyStations } from '@/services/stationService';
+import { fetchNearbyStations, calculateHaversineDistance } from '@/services/stationService';
 import { toast } from '@/components/ui/sonner';
 
 const popularCities = [
-  { name: 'Delhi', lat: 28.7041, lng: 77.1025 },
+  { name: 'Hyderabad', lat: 17.3850, lng: 78.4867 },
   { name: 'Mumbai', lat: 19.0760, lng: 72.8777 },
   { name: 'Bangalore', lat: 12.9716, lng: 77.5946 },
-  { name: 'Hyderabad', lat: 17.3850, lng: 78.4867 },
+  { name: 'New Delhi', lat: 28.6139, lng: 77.2090 },
   { name: 'Chennai', lat: 13.0827, lng: 80.2707 },
-  { name: 'Kolkata', lat: 22.5726, lng: 88.3639 },
 ];
 
 const SearchPage = () => {
@@ -23,6 +22,7 @@ const SearchPage = () => {
   const [searchResults, setSearchResults] = useState<Station[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeCity, setActiveCity] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<LocationCoords | null>(null);
 
   const handleSearch = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -34,34 +34,38 @@ const SearchPage = () => {
 
     setLoading(true);
     try {
-      // For the mock version, we'll just simulate a search based on the city
-      // In a real app, this would use the Google Places API's text search
-      let location;
+      // Get location based on selected city
+      let location: LocationCoords;
       
       if (activeCity) {
         const city = popularCities.find(city => city.name === activeCity);
-        if (city) location = { lat: city.lat, lng: city.lng };
+        if (city) {
+          location = { lat: city.lat, lng: city.lng };
+          setUserLocation(location);
+        } else {
+          location = { lat: 17.3850, lng: 78.4867 }; // Default to Hyderabad
+          setUserLocation(location);
+        }
       } else {
-        // Mock a location based on the search query
-        location = { lat: 20.5937, lng: 78.9629 }; // Center of India
+        // Default to Hyderabad if no city selected
+        location = { lat: 17.3850, lng: 78.4867 };
+        setUserLocation(location);
       }
       
-      if (location) {
-        const { stations } = await fetchNearbyStations(location);
+      const { stations } = await fetchNearbyStations(location);
+      
+      // If we have a search query, filter the results by name
+      const filteredStations = searchQuery
+        ? stations.filter(station => 
+            station.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            station.vicinity.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        : stations;
         
-        // If we have a search query, filter the results by name
-        const filteredStations = searchQuery
-          ? stations.filter(station => 
-              station.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              station.vicinity.toLowerCase().includes(searchQuery.toLowerCase())
-            )
-          : stations;
-          
-        setSearchResults(filteredStations);
-        
-        if (filteredStations.length === 0) {
-          toast.info('No charging stations found for your search');
-        }
+      setSearchResults(filteredStations);
+      
+      if (filteredStations.length === 0) {
+        toast.info('No charging stations found for your search');
       }
     } catch (error) {
       console.error('Error searching:', error);
@@ -85,6 +89,15 @@ const SearchPage = () => {
     }
   };
 
+  // Calculate distance between selected location and station
+  const calculateDistance = (stationLoc: LocationCoords): number => {
+    if (!userLocation) return 0;
+    return calculateHaversineDistance(
+      userLocation.lat, userLocation.lng,
+      stationLoc.lat, stationLoc.lng
+    );
+  };
+
   return (
     <div className="space-y-6 pb-16">
       <h1 className="text-2xl font-heading font-bold mb-4">Search EV Stations</h1>
@@ -106,7 +119,7 @@ const SearchPage = () => {
         </div>
         
         <div>
-          <h3 className="text-sm font-medium mb-2">Popular Cities</h3>
+          <h3 className="text-sm font-medium mb-2">Major Indian Cities</h3>
           <div className="flex flex-wrap gap-2">
             {popularCities.map(city => (
               <Button
@@ -136,7 +149,11 @@ const SearchPage = () => {
               </h2>
               <div className="space-y-3">
                 {searchResults.map(station => (
-                  <StationCard key={station.place_id} station={station} />
+                  <StationCard 
+                    key={station.place_id} 
+                    station={station} 
+                    distance={calculateDistance(station.geometry.location)}
+                  />
                 ))}
               </div>
             </div>

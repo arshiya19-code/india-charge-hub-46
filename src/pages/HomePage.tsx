@@ -6,7 +6,7 @@ import { Station, LocationCoords } from '@/types';
 import GoogleMap from '@/components/GoogleMap';
 import StationCard from '@/components/StationCard';
 import LocationPermission from '@/components/LocationPermission';
-import { fetchNearbyStations } from '@/services/stationService';
+import { fetchNearbyStations, calculateHaversineDistance } from '@/services/stationService';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/components/ui/sonner';
 
@@ -51,16 +51,13 @@ const HomePage = () => {
     navigate(`/station/${station.place_id}`, { state: { from: '/' } });
   };
 
-  // Calculate distance between user and station (simplified)
+  // Calculate distance between user and station using Haversine formula
   const calculateDistance = (stationLoc: LocationCoords): number => {
     if (!userLocation) return 0;
-    
-    // Simplified distance calculation (not accurate for real-world use)
-    const latDiff = Math.abs(userLocation.lat - stationLoc.lat);
-    const lngDiff = Math.abs(userLocation.lng - stationLoc.lng);
-    
-    // Convert to approximate meters (very rough estimate)
-    return Math.sqrt(latDiff * latDiff + lngDiff * lngDiff) * 111000;
+    return calculateHaversineDistance(
+      userLocation.lat, userLocation.lng,
+      stationLoc.lat, stationLoc.lng
+    );
   };
 
   if (!userLocation) {
