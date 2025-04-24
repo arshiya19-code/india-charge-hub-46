@@ -10,6 +10,12 @@ interface LocationPermissionProps {
   onLocationGranted: (location: LocationCoords) => void;
 }
 
+// Hyderabad coordinates
+const HYDERABAD_LOCATION: LocationCoords = {
+  lat: 17.3850,
+  lng: 78.4867
+};
+
 const LocationPermission = ({ onLocationGranted }: LocationPermissionProps) => {
   const [permissionStatus, setPermissionStatus] = useState<'prompt' | 'granted' | 'denied'>('prompt');
 
@@ -24,53 +30,47 @@ const LocationPermission = ({ onLocationGranted }: LocationPermissionProps) => {
       setPermissionStatus(permission.state as 'prompt' | 'granted' | 'denied');
       
       if (permission.state === 'granted') {
-        getLocation();
+        useHyderabadLocation();
       }
     } catch (error) {
       console.error("Error checking permission:", error);
+      // Use Hyderabad as fallback
+      useHyderabadLocation();
     }
   };
 
   const getLocation = () => {
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        const location = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        };
-        
-        // Check if the location is within India's rough bounding box
-        const indiaBox = {
-          north: 35.5,  // Northern boundary of India
-          south: 6.5,   // Southern boundary of India
-          east: 97.5,   // Eastern boundary of India
-          west: 68.0    // Western boundary of India
-        };
-        
-        if (
-          location.lat >= indiaBox.south && 
-          location.lat <= indiaBox.north && 
-          location.lng >= indiaBox.west && 
-          location.lng <= indiaBox.east
-        ) {
-          onLocationGranted(location);
-          setPermissionStatus('granted');
-          toast.success("Location access granted");
-        } else {
-          toast.error("This app only works within India");
+    try {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          // Always use Hyderabad's location regardless of actual position
+          useHyderabadLocation();
+        },
+        error => {
+          console.error("Error getting location:", error);
+          // Use Hyderabad as fallback
+          useHyderabadLocation();
         }
-      },
-      error => {
-        setPermissionStatus('denied');
-        toast.error("Location access denied");
-        console.error("Error getting location:", error);
-      }
-    );
+      );
+    } catch (error) {
+      console.error("Error in getLocation:", error);
+      useHyderabadLocation();
+    }
+  };
+
+  const useHyderabadLocation = () => {
+    onLocationGranted(HYDERABAD_LOCATION);
+    setPermissionStatus('granted');
+    toast.success("Location set to Hyderabad");
   };
 
   useEffect(() => {
     checkPermission();
   }, []);
+
+  const handleAllowLocation = () => {
+    getLocation();
+  };
 
   if (permissionStatus === 'granted') {
     return null;
@@ -83,10 +83,10 @@ const LocationPermission = ({ onLocationGranted }: LocationPermissionProps) => {
       </div>
       <h2 className="text-xl font-bold mb-2">Location Access Required</h2>
       <p className="text-muted-foreground mb-4">
-        We need your location to show EV charging stations near you in India.
+        We need your location to show EV charging stations in Hyderabad.
       </p>
       <Button 
-        onClick={getLocation} 
+        onClick={handleAllowLocation} 
         className="w-full"
       >
         Allow Location Access

@@ -6,25 +6,31 @@ interface StationsResponse {
   error?: string;
 }
 
+// Hyderabad coordinates
+const HYDERABAD_LOCATION: LocationCoords = {
+  lat: 17.3850,
+  lng: 78.4867
+};
+
 // This is a mock service until we have the actual Google Places API key
 export const fetchNearbyStations = async (
   location: LocationCoords,
   radius: number = 5000
 ): Promise<StationsResponse> => {
   try {
-    // Mock data for now - In real implementation, this would call Google Places API
+    // Mock data for charging stations in Hyderabad
     const mockStations: Station[] = [
       {
         id: '1',
         place_id: 'place123',
         name: 'Tata Power EV Charging Station',
-        vicinity: '123 MG Road, Bangalore',
+        vicinity: 'Hitech City, Hyderabad',
         rating: 4.5,
         user_ratings_total: 120,
         geometry: {
           location: {
-            lat: location.lat + 0.01,
-            lng: location.lng + 0.01,
+            lat: HYDERABAD_LOCATION.lat + 0.01,
+            lng: HYDERABAD_LOCATION.lng + 0.01,
           },
         },
         available: true,
@@ -34,13 +40,13 @@ export const fetchNearbyStations = async (
         id: '2',
         place_id: 'place456',
         name: 'BPCL EV Charging Hub',
-        vicinity: '456 Outer Ring Road, Delhi',
+        vicinity: 'Banjara Hills, Hyderabad',
         rating: 4.2,
         user_ratings_total: 85,
         geometry: {
           location: {
-            lat: location.lat - 0.008,
-            lng: location.lng + 0.005,
+            lat: HYDERABAD_LOCATION.lat - 0.008,
+            lng: HYDERABAD_LOCATION.lng + 0.005,
           },
         },
         available: false,
@@ -50,13 +56,13 @@ export const fetchNearbyStations = async (
         id: '3',
         place_id: 'place789',
         name: 'Ather Grid',
-        vicinity: '789 Anna Salai, Chennai',
+        vicinity: 'Jubilee Hills, Hyderabad',
         rating: 4.7,
         user_ratings_total: 210,
         geometry: {
           location: {
-            lat: location.lat + 0.005,
-            lng: location.lng - 0.007,
+            lat: HYDERABAD_LOCATION.lat + 0.005,
+            lng: HYDERABAD_LOCATION.lng - 0.007,
           },
         },
         available: true,
@@ -66,13 +72,13 @@ export const fetchNearbyStations = async (
         id: '4',
         place_id: 'place012',
         name: 'Reliance EV Charging Park',
-        vicinity: '10 Marine Drive, Mumbai',
+        vicinity: 'Gachibowli, Hyderabad',
         rating: 4.0,
         user_ratings_total: 95,
         geometry: {
           location: {
-            lat: location.lat - 0.01,
-            lng: location.lng - 0.01,
+            lat: HYDERABAD_LOCATION.lat - 0.01,
+            lng: HYDERABAD_LOCATION.lng - 0.01,
           },
         },
         opening_hours: {
@@ -85,13 +91,13 @@ export const fetchNearbyStations = async (
         id: '5',
         place_id: 'place345',
         name: 'IOCL Fast Charger',
-        vicinity: '22 Rajpath, New Delhi',
+        vicinity: 'Secunderabad, Hyderabad',
         rating: 3.9,
         user_ratings_total: 65,
         geometry: {
           location: {
-            lat: location.lat + 0.015,
-            lng: location.lng - 0.003,
+            lat: HYDERABAD_LOCATION.lat + 0.015,
+            lng: HYDERABAD_LOCATION.lng - 0.003,
           },
         },
         opening_hours: {
@@ -112,18 +118,18 @@ export const fetchNearbyStations = async (
 export const getStationDetails = async (stationId: string): Promise<Station | null> => {
   try {
     // In real implementation, this would call Google Places API for details
-    // Mocking a single station detail for now
+    // Mocking a single station detail for Hyderabad
     const mockDetail: Station = {
       id: stationId,
       place_id: `place_${stationId}`,
       name: 'Tata Power EV Charging Station',
-      vicinity: '123 MG Road, Bangalore',
+      vicinity: 'Hitech City, Hyderabad',
       rating: 4.5,
       user_ratings_total: 120,
       geometry: {
         location: {
-          lat: 12.9716,
-          lng: 77.5946,
+          lat: HYDERABAD_LOCATION.lat + 0.01,
+          lng: HYDERABAD_LOCATION.lng + 0.01,
         },
       },
       available: true,

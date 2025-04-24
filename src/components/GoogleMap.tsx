@@ -9,6 +9,7 @@ interface GoogleMapProps {
   className?: string;
 }
 
+// Add Google Maps types
 declare global {
   interface Window {
     google: any;
@@ -18,8 +19,8 @@ declare global {
 
 const GoogleMap = ({ stations, userLocation, onMarkerClick, className = '' }: GoogleMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<google.maps.Marker[]>([]);
+  const mapInstanceRef = useRef<any>(null);
+  const markersRef = useRef<any[]>([]);
 
   // Setup map when component mounts
   useEffect(() => {
@@ -133,7 +134,7 @@ const GoogleMap = ({ stations, userLocation, onMarkerClick, className = '' }: Go
   }, [stations]);
 
   return (
-    <div ref={mapRef} className={`map-container ${className}`}></div>
+    <div ref={mapRef} className={`map-container h-[350px] ${className}`}></div>
   );
 };
 

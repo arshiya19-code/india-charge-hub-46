@@ -3,16 +3,15 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Firebase configuration
+// These are placeholder values - in a real project, you would use actual Firebase credentials
 const firebaseConfig = {
-  // Add your Firebase config here
-  apiKey: "YOUR_API_KEY",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDqZsZyzE2aUcf-GxcuD9N41dJaHt-TNsE",
+  authDomain: "india-charge-hub-demo.firebaseapp.com",
+  projectId: "india-charge-hub-demo",
+  storageBucket: "india-charge-hub-demo.appspot.com",
+  messagingSenderId: "123456789012",
+  appId: "1:123456789012:web:abcdefghijklmnopqrstuv"
 };
 
 // Initialize Firebase
